@@ -1,0 +1,25 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: apisuportepostgres 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apisuportepostgres
+  template:
+    metadata:
+      labels:
+        app: apisuportepostgres 
+    spec:
+      containers:
+        - name: apisuportepostgres 
+          image: resource.azurecr.io/apisuportepostgres
+          ports:
+          - containerPort: 80
+          env:
+          - name: ConnectionStrings__BaseSuporte
+            valueFrom:
+              secretKeyRef:
+                name: apisuporte-secret
+                key: PostgresConnection
