@@ -97,14 +97,6 @@ stages:
       env:
         ASPNETCORE_URLS: 'http://localhost:5000'
     - script: |
-        cd $(Path_Tests)
-        newman run $(Collection_Postman) -n $(Iterations)
-      displayName: Executar testes da API REST com Newman
-      condition: always() 
-    - script: psql postgresql://postgres:Postgres2022!@localhost:5432/basesuporte -c 'SELECT * FROM "Chamados";'
-      condition: always() 
-      displayName: Exibir registros criados na base de dados
-    - script: |
         echo "** Versão Global do Newman **"
         newman -v
         npm install newman-reporter-htmlextra@1.22.11
@@ -113,11 +105,14 @@ stages:
       condition: always() 
     - script: |
         cd $(Path_Tests)
-        npx newman run $(Collection_Postman) -n $(Iterations) -r htmlextra,junitfullreport
-        cd ./newman
-        ls
-      displayName: Gerar resultados em HTML e XML dos testes da API REST com Newman
+        npx newman run $(Collection_Postman) -n $(Iterations) -r cli,htmlextra,junitfullreport
+      displayName: Executar e gerar resultados em HTML e XML dos testes da API REST com Newman
       condition: always()
+    - script: |
+        cd $(Path_Tests)/newman
+        ls
+      displayName: Listar arquivos gerados após testes da API REST com Newman
+      condition: always() 
     - script: psql postgresql://postgres:Postgres2022!@localhost:5432/basesuporte -c 'SELECT * FROM "Chamados";'
       condition: always() 
       displayName: Exibir registros criados na base de dados após segundo conjunto de testes
